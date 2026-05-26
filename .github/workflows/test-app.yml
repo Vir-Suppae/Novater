@@ -20,9 +20,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: Zig ${{ matrix.zig }} on ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Zig
         uses: korandoru/setup-zig@v1
+      - name: Install GLFW Deps
+        if: matrix.os == 'ubuntu-latest'
+        uses: RpxdYTX/install-glfw-deps@v2
         with:
           zig-version: ${{ matrix.zig }}
       - run: zig build test
