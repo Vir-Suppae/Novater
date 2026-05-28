@@ -27,5 +27,11 @@ jobs:
           zig-version: ${{ matrix.zig }}
       - name: Install GLFW Deps
         if: matrix.os == 'ubuntu-latest'
-        uses: RpxdYTX/install-glfw-deps@v2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libglfw3-dev \
+            libwayland=dev \
+            libxkbcommon-dev \
+            xorg-dev
       - run: zig build test
