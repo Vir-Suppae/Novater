@@ -75,8 +75,6 @@ pub fn main(init: std.process.Init) !void {
 }
 
 test "check chunk utils" {
-    std.log.info("key of 2_107_231_143, -1_388_289_902: {}", .{chunk_utils.chunkCoordsToKey(2_107_231_143, -1_388_289_902)});
-    std.log.info("chunk coords of 12484084349359737767: {any}", .{chunk_utils.keyToChunkCoords(12484084349359737767)});
     try std.testing.expectEqual(chunk_utils.chunkCoordsToKey(2_107_231_143, -1_388_289_902), 12484084349359737767);
     try std.testing.expectEqual(chunk_utils.keyToChunkCoords(12484084349359737767), [2]i32{ 2_107_231_143, -1_388_289_902 });
 }
