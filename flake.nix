@@ -18,11 +18,6 @@
           wayland-protocols
           libxkbcommon
           libGL
-          libx11
-          libxcursor
-          libxrandr
-          libxinerama
-          libxi
         ];
       };
     }) inputs.nixpkgs.legacyPackages;

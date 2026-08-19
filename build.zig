@@ -3,7 +3,6 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
-    const dont_use_raylib_libraries = b.option(bool, "dontUseRaylibLibraries", "don't use the libraries provided by raylib") orelse false;
 
     const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
@@ -24,12 +23,7 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    if (dont_use_raylib_libraries) {
-        exe.root_module.linkSystemLibrary("X11", .{});
-        exe.root_module.linkSystemLibrary("GL", .{});
-    } else {
-        exe.root_module.linkLibrary(raylib_artifact);
-    }
+    exe.root_module.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 
