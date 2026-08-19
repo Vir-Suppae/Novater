@@ -3,14 +3,17 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const dont_use_raylib_libraries = b.option(bool, "dontUseRaylibLibraries", "don't use the libraries provided by raylib") orelse false;
 
     const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
+        .linux_display_backend = .Wayland,
     });
 
     const raylib = raylib_dep.module("raylib"); // main raylib module
     const raygui = raylib_dep.module("raygui"); // raygui module
+    const raylib_artifact = raylib_dep.artifact("raylib");
 
     const exe = b.addExecutable(.{
         .name = "Novater",
@@ -21,8 +24,12 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    exe.root_module.linkSystemLibrary("X11", .{});
-    exe.root_module.linkSystemLibrary("GL", .{});
+    if (dont_use_raylib_libraries) {
+        exe.root_module.linkSystemLibrary("X11", .{});
+        exe.root_module.linkSystemLibrary("GL", .{});
+    } else {
+        exe.root_module.linkLibrary(raylib_artifact);
+    }
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 

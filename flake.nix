@@ -14,6 +14,9 @@
         ];
 
         buildInputs = with pkgs; [
+          wayland
+          wayland-protocols
+          libxkbcommon
           libGL
           libx11
           libxcursor
