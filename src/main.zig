@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rg = @import("raygui");
 const cam_utils = @import("camera_utils.zig");
 const chunk_utils = @import("chunk.zig");
+const Player = @import("player.zig").Player;
 
 const IVec = struct {
     x: i32,
@@ -15,53 +16,65 @@ const IVec = struct {
     }
 };
 
+const GameState = struct { player: Player, cam: rl.Camera2d };
+
 pub fn main(init: std.process.Init) !void {
     const alloc = init.gpa;
+
+    // Raylib setip
     rl.setConfigFlags(.{ .window_resizable = true });
     rl.initWindow(640, 480, "Novater");
     defer rl.closeWindow();
     rl.setWindowMinSize(480, 360);
 
-    var cam = cam_utils.makeWorldCam();
+    var game_state = GameState{
+        .player = Player{ .pos = .init(0, 0) },
+        .cam = cam_utils.makeWorldCam(),
+    };
 
-    var map = std.AutoHashMap(u64, chunk_utils.Chunk).init(alloc);
-    defer map.deinit();
+    // var map = std.AutoHashMap(u64, chunk_utils.Chunk).init(alloc);
+    // defer map.deinit();
 
-    var cpos: rl.Vector2 = .zero();
-    var bpos: rl.Vector2 = .zero();
-    var ppos: rl.Vector2 = .zero();
+    // var cpos: rl.Vector2 = .zero();
+    // var bpos: rl.Vector2 = .zero();
+    // var ppos: rl.Vector2 = .zero();
 
-    for (0..255) |cy| {
-        for (0..255) |cx| {
-            const x: i32 = @intCast(cx);
-            const y: i32 = @intCast(cy);
-            try map.put(chunk_utils.chunkCoordsToKey(x - 64, y - 64), .init());
-        }
-    }
+    // for (0..255) |cy| {
+    //     for (0..255) |cx| {
+    //         const x: i32 = @intCast(cx);
+    //         const y: i32 = @intCast(cy);
+    //         try map.put(chunk_utils.chunkCoordsToKey(x - 64, y - 64), .init());
+    //     }
+    // }
 
     while (!rl.windowShouldClose()) {
         const ft = rl.getFrameTime();
-        cam_utils.adjustCam(&cam);
-        if (rl.isKeyDown(.w)) {
-            ppos.y -= 100 * ft;
-        } else if (rl.isKeyDown(.s)) {
-            ppos.y += 100 * ft;
-        }
-        if (rl.isKeyDown(.a)) {
-            ppos.x -= 100 * ft;
-        } else if (rl.isKeyDown(.d)) {
-            ppos.x += 100 * ft;
-        }
-        bpos.x += @divFloor(ppos.x, 16);
-        ppos.x = @mod(ppos.x, 16);
-        bpos.y += @divFloor(ppos.y, 16);
-        ppos.y = @mod(ppos.y, 16);
-        cpos.x += @divFloor(bpos.x, 16);
-        bpos.x = @mod(bpos.x, 16);
-        cpos.y += @divFloor(bpos.y, 16);
-        bpos.y = @mod(bpos.y, 16);
-        const wpos = cpos.multiply(.init(256, 256)).add(bpos.multiply(.init(16, 16)).add(ppos));
-        cam.target = wpos;
+
+        cam_utils.adjustCam(&game_state.cam);
+
+        // Player movement
+        // if (rl.isKeyDown(.w)) {
+        //     ppos.y -= 100 * ft;
+        // } else if (rl.isKeyDown(.s)) {
+        //     ppos.y += 100 * ft;
+        // }
+        // if (rl.isKeyDown(.a)) {
+        //     ppos.x -= 100 * ft;
+        // } else if (rl.isKeyDown(.d)) {
+        //     ppos.x += 100 * ft;
+        // }
+        // bpos.x += @divFloor(ppos.x, 16);
+        // ppos.x = @mod(ppos.x, 16);
+        // bpos.y += @divFloor(ppos.y, 16);
+        // ppos.y = @mod(ppos.y, 16);
+        // cpos.x += @divFloor(bpos.x, 16);
+        // bpos.x = @mod(bpos.x, 16);
+        // cpos.y += @divFloor(bpos.y, 16);
+        // bpos.y = @mod(bpos.y, 16);
+        // const wpos = cpos.multiply(.init(256, 256)).add(bpos.multiply(.init(16, 16)).add(ppos));
+
+        game_state.cam.target = game_state.player.pos;
+
         rl.beginDrawing();
         defer rl.endDrawing();
 
@@ -69,9 +82,14 @@ pub fn main(init: std.process.Init) !void {
         defer cam.end();
 
         rl.clearBackground(.sky_blue);
+
         rl.drawRectangleV(.zero(), .init(32, 32), .black);
         rl.drawRectangleV(wpos, .init(32, 32), .pink);
     }
+}
+
+fn update(state: *GameState) void {
+    state.player.pos.x += 1;
 }
 
 test "check chunk utils" {
