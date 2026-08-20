@@ -15,6 +15,7 @@
 
         buildInputs = with pkgs; [
           wayland
+          wayland-scanner
           wayland-protocols
           libxkbcommon
           libGL

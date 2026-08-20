@@ -78,13 +78,13 @@ pub fn main(init: std.process.Init) !void {
         rl.beginDrawing();
         defer rl.endDrawing();
 
-        cam.begin();
-        defer cam.end();
+        game_state.cam.begin();
+        defer game_state.cam.end();
 
         rl.clearBackground(.sky_blue);
 
         rl.drawRectangleV(.zero(), .init(32, 32), .black);
-        rl.drawRectangleV(wpos, .init(32, 32), .pink);
+        rl.drawRectangleV(game_state.player.pos, .init(32, 32), .pink);
     }
 }
 
