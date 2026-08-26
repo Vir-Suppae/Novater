@@ -10,6 +10,20 @@ const GameState = struct {
     pub fn update(this: *@This()) void {
         this.player.update();
     }
+    pub fn render(this: *const @This()) void {
+        rl.beginDrawing();
+        defer rl.endDrawing();
+
+        rl.clearBackground(.sky_blue);
+
+        this.player.cam.begin();
+
+        rl.drawRectangleV(this.player.pos, .init(32, 32), .pink);
+
+        this.player.cam.end();
+
+        rl.drawRectangleV(.zero(), .init(32, 32), .black);
+    }
 };
 
 pub fn main(_: std.process.Init) !void {
@@ -33,17 +47,7 @@ pub fn main(_: std.process.Init) !void {
         // const ft = rl.getFrameTime();
 
         game_state.update();
-
-        rl.beginDrawing();
-        defer rl.endDrawing();
-
-        game_state.player.cam.begin();
-        defer game_state.player.cam.end();
-
-        rl.clearBackground(.sky_blue);
-
-        rl.drawRectangleV(.zero(), .init(32, 32), .black);
-        rl.drawRectangleV(game_state.player.pos, .init(32, 32), .pink);
+        game_state.render();
     }
 }
 
